@@ -1,0 +1,104 @@
+# ==============================
+# Python
+# ==============================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# ==============================
+# Jupyter Notebook
+# ==============================
+.ipynb_checkpoints/
+
+# ==============================
+# IDE / Editors
+# ==============================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ==============================
+# OS
+# ==============================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ==============================
+# Python tooling
+# ==============================
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# ==============================
+# Environment / Secrets
+# ==============================
+.env
+.env.*
+!.env.example
+
+# ==============================
+# Logs
+# ==============================
+*.log
+
+# ==============================
+# Temporary files
+# ==============================
+*.tmp
+*.temp
+*.bak
+*.cache
+
+# ==============================
+# Generated model artifacts
+# ==============================
+*.pkl
+*.pickle
+*.joblib
+*.h5
+*.hdf5
+*.onnx
+
+# ==============================
+# Experiment / generated outputs
+# ==============================
+experiments/*
+
+# Keep the experiments directory itself
+!experiments/.gitkeep
+
+# ==============================
+# Local generated files
+# ==============================
+*.zip
+*.tar
+*.tar.gz
+
+# ==============================
+# Large local datasets
+# ==============================
+# Uncomment these only if datasets are NOT supposed to be committed:
+dataset/*
+# !dataset/.gitkeep
+
+
+# Amazon ML Challenge raw dataset
+6ab10eb3b23ba_student_resource/
+
+# ==============================
+# Generated caches
+# ==============================
+.cache/
+cache/
