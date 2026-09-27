@@ -1,7 +1,7 @@
 # ML Challenge 2026: Business Entity Resolution Solution Template
 
-**Team Name:** Entity Resolution Squad  
-**Team Members:** Member 1 (Preprocessing & Blocking), Member 2 (ML & Matching Model)  
+**Team Name:** Incredibles  
+**Team Members:** Sri Harshitha Manthena, Nalluri Sree Deekshitha, Maniraj Kyatham  
 **Submission Date:** September 2026
 
 ---
