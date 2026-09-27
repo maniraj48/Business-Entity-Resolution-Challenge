@@ -66,6 +66,7 @@ class CandidateGenerator:
             "first_word": defaultdict(list),
             "token_country": defaultdict(list),
             "address_token": defaultdict(list),
+            "ngram_country": defaultdict(list),
         }
         
         for _, row in df_candidates.iterrows():
@@ -78,6 +79,9 @@ class CandidateGenerator:
             if c_name:
                 index["exact_name"][(c_name, country)].append(eid)
                 index["global_name"][c_name].append(eid)
+                if len(c_name) >= 3:
+                    for i in range(len(c_name) - 2):
+                        index["ngram_country"][(c_name[i:i+3], country)].append(eid)
                 
             if can_name:
                 index["canonical_name"][(can_name, country)].append(eid)
@@ -154,18 +158,19 @@ class CandidateGenerator:
             for atok in addr_tokens:
                 candidates.update(index["address_token"].get((atok, s1_country), []))
                 
-            # 7. Fuzzy fallback if 0 candidates found and fuzzy fallback enabled
+            # 7. Fast Fuzzy fallback if 0 candidates found
             if len(candidates) == 0 and self.enable_fuzzy_fallback and s1_name:
-                # Find best matches in same country candidates
-                same_country_cands = [
-                    cid for cid, cinfo in cand_map.items() 
-                    if not s1_country or cinfo["country"] == s1_country
-                ]
-                if not same_country_cands:
-                    same_country_cands = list(cand_map.keys())
-                    
-                if same_country_cands:
-                    cand_names = [cand_map[cid]["name"] for cid in same_country_cands]
+                # Find candidate subset sharing at least one character 3-gram in same country
+                s1_ngrams = [s1_name[i:i+3] for i in range(len(s1_name)-2)] if len(s1_name) >= 3 else [s1_name]
+                fuzzy_subset: Set[str] = set()
+                for ng in s1_ngrams[:5]:
+                    fuzzy_subset.update(index.get("ngram_country", {}).get((ng, s1_country), []))
+                    if len(fuzzy_subset) >= 200:
+                        break
+                        
+                candidate_pool = list(fuzzy_subset) if fuzzy_subset else list(cand_map.keys())[:500]
+                if candidate_pool:
+                    cand_names = [cand_map[cid]["name"] for cid in candidate_pool]
                     matches = process.extract(
                         s1_name,
                         cand_names,
@@ -173,9 +178,8 @@ class CandidateGenerator:
                         limit=self.fuzzy_top_k
                     )
                     for match in matches:
-                        cand_idx = match[2]
-                        if match[1] >= 50:  # Fuzzy threshold score
-                            candidates.add(same_country_cands[cand_idx])
+                        if match[1] >= 50:
+                            candidates.add(candidate_pool[match[2]])
                             
             # Prune candidates if count exceeds max_candidates_per_s1
             candidate_list = list(candidates)

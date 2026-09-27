@@ -105,7 +105,7 @@ def evaluate_pair_classifier(
     X_val: pd.DataFrame,
     y_val: pd.Series,
     threshold: float = 0.5
-) -> Dict[str, float]:
+) -> Dict[str, Any]:
     """Evaluate pair-level classification metrics."""
     probs = model.predict_proba(X_val)
     preds = (probs >= threshold).astype(int)
@@ -114,7 +114,12 @@ def evaluate_pair_classifier(
         y_val, preds, average="binary", zero_division=0
     )
     f05 = (1.25 * prec * rec) / (0.25 * prec + rec) if (0.25 * prec + rec) > 0 else 0.0
-    auc = float(roc_auc_score(y_val, probs)) if len(np.unique(y_val)) > 1 else 0.5
+    
+    unique_classes = np.unique(y_val)
+    if len(unique_classes) > 1:
+        auc = float(roc_auc_score(y_val, probs))
+    else:
+        auc = float("nan")  # ROC-AUC is undefined when y_val has only 1 class
     
     return {
         "pair_precision": float(prec),
